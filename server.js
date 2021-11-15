@@ -20,74 +20,109 @@ app.use(express.json());
 // Make public a static folder
 app.use(express.static("public"));
 
+//setting up handlebars
+app.engine("handlebars", exphbs.engine({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
+
 // Connect to the Mongo DB
-mongoose.connect("mongodb://localhost/NewScrapper", { useNewUrlParser: true });
+mongoose.connect("mongodb://localhost/NewScraper", { useNewUrlParser: true });
 
 //routes
+
+//serving the handlebar
+app.get("/" , function(req, res){
+    res.render("index");
+});
 
 //A Get Route for scraping the reddit news website
 app.get("/scrape", function (req, res){
 //first, we grab the body of the HTML with axios.
-    axios.get('https://old.reddit.com/r/webdev').then(function(resp){
+    axios.get('https://old.reddit.com/r/worldnews/new').then(function(resp){
         // Then, we load that into cheerio and save it to $ for a shorthand selector
         const $ = cheerio.load(resp.data);
-        // Save an empty result object
-        let results =[];
-        
+
+        let ObjectResultArray=[]
         $("p.title").each(function(i, element){
             // Add the text and href of every link, and save them as properties of the result object
+
             let title = $(element).text();
             let link = $(element).children().attr("href");
 
-            results.push({
+            if(title && link){
+                let objectResult= {
                     title: title,
                     link: link
+                }
+                
+                ObjectResultArray.push(objectResult)
+                //send the result to the frontend
+                // // Create a new Article using the `objectResult` object built from scraping
+                db.Article.create(objectResult)
+                .then(function(dbArticle) {
+                // View the added result in the console
+                    console.log(dbArticle);
+                })
+                .catch(function(err) {
+                // If an error occurred, log it
+                    console.log(err);
                 });
-
-            // Create a new Article using the `result` object built from scraping
-            db.Article.create(result)
-            .then(function(dbArticle) {
-            // View the added result in the console
-                console.log(dbArticle);
-            })
-            .catch(function(err) {
-            // If an error occurred, log it
-                console.log(err);
-            });
+            }
         });
-
-        console.log(results);
+        res.json(ObjectResultArray); 
     });
 });
 
+// Route for getting all Articles from the db
+app.get("/articles", function(req, res) {
+    // TODO: Finish the route so it grabs all of the articles
+    db.Article.find({}, function(err, found){
+    if(err) {
+        console.log(err);
+    }
+    else {
+        res.json(found);
+    }
+    });
+});
 
+// Route for grabbing a specific Article by id, populate it with it's note
+app.get("/articles/:id", function(req, res) {
+    // TODO
+    console.log(req.params.id);
+    // ====
+    // Finish the route so it finds one article using the req.params.id,
+    db.Article.findOne({_id: req.params.id})
+    // and run the populate method with "note",
+    .populate("note")
+    // then responds with the article with the note included
+    .then(function(dbArticle){
+        res.json(dbArticle);
+    })
+    .catch(function(err){
+        res.json(err);
+    });
+    
+});
 
+// Route for saving/updating an Article's associated Note
+app.post("/articles/:id", function(req, res) {
+    // TODO
+    // ====
+    // save the new note that gets posted to the Notes collection
+    db.Note.insertMany({title: req.body.title, body: req.body.body})
+    .then(function(dbNote){
+    // then find an article from the req.params.id
+    // and update it's "note" property with the _id of the new note
+    db.Article.updateOne({_id: req.params.id}, { $set: { "note": dbNote[0]._id }})
+        .then(function(result){
+        res.json(result);
+        });
+    })
+    .catch(function(err){
+    res.json(err);
+    })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+});
 
 
 // Start the server
