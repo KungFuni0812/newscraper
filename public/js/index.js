@@ -9,11 +9,12 @@ const scrapeModal = new bootstrap.Modal(scrapeModalElement, {
 
 $(document).on("click", "#scrape", function(e){
     e.preventDefault();
-
+    console.log("I clicked the scrape button!");
     $.ajax({
-        URL:"/scrape",
+        url: "/scrape",
         type: "GET"
     }).done(function(resp){
+        console.log(resp)
         scrapeModal.show();
     });
     
@@ -22,4 +23,5 @@ $(document).on("click", "#scrape", function(e){
 $(document).on("click", ".close-modal", function(e){
     e.preventDefault();
     scrapeModal.hide();
+    location.reload();
 });
