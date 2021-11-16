@@ -1,21 +1,36 @@
 <div class="container-fluid">
-    <div class = "row">
-        <div class="container-fluid bg-dark text-light p-3">
-            <div class="container bg-dark p-3">
+    <div class="bg-dark text-light">
+        <div class="bg-dark pt-5 pb-5 ps-5 ms-5 row d-flex align-items-center">
+            <div class="col-5">
                 <h1 class="display-4">World News Scraper</h1>
-                <hr>
+            </div>
+            <div class="col"></div>
+            <div class="col-3">
                 <button type="button" class="btn btn-success" id="scrape">SCRAPE NEW ARTICLES</button>
             </div>
         </div>
+    </div>
     <div class = "row">
-        <div class = "col-1"></div>
-        <div class ="col-10">
-            <div class = "row articles-container p-5 ms-5">
-            
+        <div class ="articles col-12">
+            {{#each articles}}
+                {{> news/news-block}}
+            {{/each}}
+        </div>
+    </div>
+    <div class="scrape-modal modal fade" id="scrape-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close close-modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Scrape Complete!</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="close-modal btn btn-secondary" id="closebutton">Close</button>
+                </div>
             </div>
         </div>
-        <div class = "col-1"></div>
-    </div>
     </div>
 </div>
 

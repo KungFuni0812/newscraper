@@ -1,27 +1,33 @@
-//Grab the articles as a json
+    
+    let scrapeModalElement= document.getElementById('scrape-modal')
 
-function showArticles() {
-    $.getJSON("/articles", function(data) {
-        // For each one
-        console.log('articles data:');
-        console.log(data.length);
-        for (var i = 0; i < data.length; i++) {
-          // Display the apropos information on the page
-            $(".articles-container").append("<p data-id='" + data[i]._id + "'>" + data[i].title + "<br />" + data[i].link + "</p>");
-        }
-    });    
-}
-
-showArticles();
-
-$(document).on("click", "#scrape", function(e){
-    e.preventDefault();
-    console.log("I click this")
-
-    $.getJSON("/scrape", function(data) {
-        showArticles();
+    const scrapeModal = new bootstrap.Modal(scrapeModalElement, {
+        backdrop: 'static',
+        keyboard: false,
+        focus: true
     });
-});
+
+    $(document).on("click", "#scrape", function(e){
+        e.preventDefault();
+        //console.log("I click this")  
+        $.ajax({
+            URL:"/scrape",
+            type: "GET"
+        }).done(function(resp){
+            //console.log(resp)
+            scrapeModal.show();
+        })
+        
+    });
+
+    $(document).on("click", ".close-modal", function(e){
+        e.preventDefault();
+        scrapeModal.hide();
+    });
+
+
+
+
 
 // // Whenever someone clicks a p tag
 // $(document).on("click", "p", function() {

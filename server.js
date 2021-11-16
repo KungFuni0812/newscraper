@@ -28,10 +28,17 @@ app.set("view engine", "handlebars");
 mongoose.connect("mongodb://localhost/NewScraper", { useNewUrlParser: true });
 
 //routes
+async function showArticles(req, res) {
+    let result = await db.Article.find({}).sort({_id: -1}).lean();
+    const hbsObject = {
+        articles: result
+    }
+    res.render("index", hbsObject);
+}
 
 //serving the handlebar
 app.get("/" , function(req, res){
-    res.render("index");
+    showArticles(req, res);
 });
 
 //A Get Route for scraping the reddit news website
@@ -69,19 +76,6 @@ app.get("/scrape", function (req, res){
             }
         });
         res.json(ObjectResultArray); 
-    });
-});
-
-// Route for getting all Articles from the db
-app.get("/articles", function(req, res) {
-    // TODO: Finish the route so it grabs all of the articles
-    db.Article.find({}, function(err, found){
-    if(err) {
-        console.log(err);
-    }
-    else {
-        res.json(found);
-    }
     });
 });
 
