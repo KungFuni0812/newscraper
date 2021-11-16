@@ -4,13 +4,13 @@
 <div class = "row articles-container pt-3 pb-3 ps-5 me-5">
     <div class ="col-9 border-bottom">
         <p>
-            User Name: {{title}}
+            <i class="fa fa-user-circle" aria-hidden="true"></i> : {{title}}
         <br>
-            {{title}}'s Comment: {{body}}
+            <i class="fa fa-comment" aria-hidden="true"></i> : {{body}}
         </p>
     </div>
     <div class ="col-1 border-bottom">
-        <button type="button" class="delete-btn btn btn-danger" data-id="{{_id}}" id="delete-comment">Delete</button>
+        <button type="button" class="delete-btn btn btn-danger" data-id="{{_id}}" id="delete-comment"><i class="fa fa-minus-circle" aria-hidden="true"></i> Delete</button>
     </div>
 </div>
 
