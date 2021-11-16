@@ -27,18 +27,33 @@ app.set("view engine", "handlebars");
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/NewScraper", { useNewUrlParser: true });
 
-//routes
+//this create the object for articles that gets pass to handlebars
 async function showArticles(req, res) {
     let result = await db.Article.find({}).sort({_id: -1}).lean();
     const hbsObject = {
         articles: result
     }
     res.render("index", hbsObject);
-}
+};
+
+//this create the object for notes that gets pass to handlebars
+async function showNotes(req, res) {
+    let notesResult = await db.Note.find({article: req.params.id}).sort({article: -1}).lean();
+    const notesHbSobject = {
+        articleId: req.params.id,
+        notes: notesResult
+    }
+    res.render("notes", notesHbSobject)
+};
 
 //serving the handlebar
 app.get("/" , function(req, res){
     showArticles(req, res);
+});
+
+// Route for grabbing a specific Article by id, displaying the notes associated with that article
+app.get("/articles/:id", function(req, res) {
+    showNotes(req, res);    
 });
 
 //A Get Route for scraping the reddit news website
@@ -79,43 +94,15 @@ app.get("/scrape", function (req, res){
     });
 });
 
-// Route for grabbing a specific Article by id, populate it with it's note
-app.get("/articles/:id", function(req, res) {
-    // TODO
-    console.log(req.params.id);
-    // ====
-    // Finish the route so it finds one article using the req.params.id,
-    db.Article.findOne({_id: req.params.id})
-    // and run the populate method with "note",
-    .populate("note")
-    // then responds with the article with the note included
-    .then(function(dbArticle){
-        res.json(dbArticle);
-    })
-    .catch(function(err){
-        res.json(err);
-    });
-    
-});
-
-// Route for saving/updating an Article's associated Note
+// Route for adding an Article's associated Note
 app.post("/articles/:id", function(req, res) {
     // TODO
     // ====
     // save the new note that gets posted to the Notes collection
-    db.Note.insertMany({title: req.body.title, body: req.body.body})
-    .then(function(dbNote){
-    // then find an article from the req.params.id
-    // and update it's "note" property with the _id of the new note
-    db.Article.updateOne({_id: req.params.id}, { $set: { "note": dbNote[0]._id }})
+    db.Note.insertMany({title: req.body.title, body: req.body.body, article: req.params.id})
         .then(function(result){
-        res.json(result);
+            res.json(result);
         });
-    })
-    .catch(function(err){
-    res.json(err);
-    })
-
 });
 
 

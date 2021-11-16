@@ -6,11 +6,11 @@
         <p data-id="{{_id}}">
             {{title}}
             <br>
-            {{link}}
+            <a href="{{link}}" class="link-dark">{{link}}</a> 
         </p>
     </div>
     <div class="col-1 border-bottom">
-        <button class = "notes" data-id="{{_id}}">Comments</button>
+        <a  href="/articles/{{_id}}" class = "btn btn-secondary notes" data-id="{{_id}}">Comments</a>
     </div>
 </div>
 

@@ -9,7 +9,17 @@ let NoteSchema = new Schema({
   // `title` is of type String
     title: String,
   // `body` is of type String
-    body: String
+    body: {
+      type: String,
+      required: true
+    },
+  //article is an object that stores an article id, the ref property links the object
+  //ID to the Article Model
+  //this allows us to pull notes that are associated with an article
+    article: {
+      type: String,
+      required: true
+    }
 });
 
 // This creates our model from the above schema, using mongoose's model method
