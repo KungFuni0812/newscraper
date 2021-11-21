@@ -9,12 +9,13 @@ const scrapeModal = new bootstrap.Modal(scrapeModalElement, {
 
 $(document).on("click", "#scrape", function(e){
     e.preventDefault();
-    console.log("I clicked the scrape button!");
     $.ajax({
         url: "/scrape",
         type: "GET"
     }).done(function(resp){
-        console.log(resp)
+        console.log('scrape complete.  result:')
+        console.log(resp);
+        $('#new-article-count').text(resp.newArticleCount);
         scrapeModal.show();
     });
     

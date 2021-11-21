@@ -63,9 +63,9 @@ app.get("/scrape", function(req, res){
         // Then, we load that into cheerio and save it to $ for a shorthand selector
         const $ = cheerio.load(resp.data);
         console.log($);
+        let newArticleCount = 0;
         $("p.title").each(function(i, element){
             // Add the text and href of every link, and save them as properties of the result object
-
             let title = $(element).text();
             let link = $(element).children().attr("href");
 
@@ -74,23 +74,22 @@ app.get("/scrape", function(req, res){
                     title: title,
                     link: link
                 }
-                console.log('objectResult:')
-                console.log(objectResult)
-                console.log('~~~~~~~~~~~~~')
-                //send the result to the frintend
                 // // Create a new Article using the `objectResult` object built from scraping
                 db.Article.create(objectResult)
-                    .then(function(dbArticle) {
-                    // View the added result in the console
-                        console.log(dbArticle);
-                    })
-                    .catch(function(err) {
-                    // If an error occurred, log it
-                        console.log(err);
-                    });
-            }
-        });
-        res.status(200).json({ "success": true });
+                .then(function(dbArticle) {
+                // View the added result in the console
+                    console.log(dbArticle);
+                    newArticleCount++;
+                    console.log(`new Article count: ${newArticleCount}`)
+                    console.log('~~~~~~~~~~~~~~~~~~~~~')
+                })
+                .catch(function(err) {
+                // If an error occurred, log it
+                    console.log(err);
+                });
+            } 
+        })
+        res.status(200).json({ "success": true, "newArticleCount": newArticleCount });
     });
 });
 
